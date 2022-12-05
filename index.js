@@ -47,6 +47,27 @@ function convertPattern(text){
     return result;
 }
 
+bot.on('text', async (ctx) => {
+    if (ctx.chat.type === "private") {
+        if (ctx.message.text.length > 0) {
+            const newText = convertPattern(ctx.message.text.toLowerCase());
+            await ctx.reply(newText,
+                  {reply_to_message_id: ctx.message.message_id});
+        } else {
+            await ctx.reply("text is empty",
+                  {reply_to_message_id: ctx.message.message_id});
+        }
+    } else if ((ctx.message.text && ctx.message.text.length > 0) && (ctx.chat.type === "group" || ctx.chat.type === "supergroup")) {
+      const LastWord = ctx.message.text.split(" ").pop();
+      const skipWay = EndingLetters.includes(LastWord);
+      if ((ListeningCommands.includes(ctx.message.text.toLowerCase()) && ctx.message.reply_to_message) || skipWay) {
+        const TargetMessage = skipWay ? ctx.message.text.slice(0, (LastWord.length * -1)) : ctx.message.reply_to_message.text;
+        const newText = convertPattern(TargetMessage.toLowerCase());
+        await ctx.reply(newText,
+            {reply_to_message_id: ctx.message.message_id});
+      }
+    }
+});
 
 console.info("Starting Bot");
 await bot.launch();
