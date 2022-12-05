@@ -1,0 +1,21 @@
+{
+  "name": "mollakeyboardi",
+  "version": "1.0.0",
+  "description": "The tool will help for those times you forget to use Alt + Shift (Persian - English) to get the correct sentence",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node main.js",
+    "test": "echo \\\"Error: no test specified\\\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BaziForYou/MollaKeyboardi.git"
+  },
+  "author": "BaziForYou",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/BaziForYou/MollaKeyboardi/issues"
+  },
+  "homepage": "https://github.com/BaziForYou/MollaKeyboardi#readme"
+}
