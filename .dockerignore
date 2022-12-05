@@ -177,7 +177,6 @@ dist
 # and uncomment the following lines
 # .pnp.*
 
-.env
 package-lock.json
 yarn.lock
 

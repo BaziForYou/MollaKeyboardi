@@ -3,6 +3,8 @@ services:
   tgbot:
     container_name: MollaKeyboardi
     restart: unless-stopped
+    env_file:
+      - .env
     build:
       context: .
       dockerfile: Dockerfile
