@@ -24,16 +24,16 @@ function convertPattern(text){
     let result = "";
     let usedPattern = "";
     let finalPattern = "";
-    if(/[a-zA-Z]/.test(text)){
+    if (/[a-zA-Z]/.test(text)) {
         usedPattern = engPattern;
         finalPattern = FaPattern;
-    }else if (/[آ-ی]/.test(text)){
+    } else if (/[آ-ی]/.test(text)) {
         usedPattern = FaPattern;
         finalPattern = engPattern;
-    }else if (/[آ-ي]/.test(text)){
+    } else if (/[آ-ي]/.test(text)) {
         usedPattern = FaPattern2;
         finalPattern = engPattern;
-    }else{
+    } else {
         return "text pattern is not valid just support english and persian";
     }
     for(let i = 0; i < text.length; i++){
