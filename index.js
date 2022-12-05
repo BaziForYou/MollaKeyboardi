@@ -14,9 +14,11 @@ function getENV(envName){
 console.info("Generating Bot System...");
 const bot = new Telegraf(getENV('BOT_TOKEN'));
 const ListeningCommands = getENV('Listening_Words').toLowerCase().split(',')
+const EndingLetters = getENV('Auto_End_Letter').toLowerCase().split(',')
 
 const engPattern = "qwertyuiop[]\\asdfghjkl;'zxcvbnm,./";
-const FaPattern = "ضصثقفغعهخحجچپشسيبلاتنمكگظطزرذدئو./";
+const FaPattern = "ضصثقفغعهخحجچپشسیبلاتنمکگظطزرذدئو./";
+const FaPattern2 = "ضصثقفغعهخحجچپشسيبلاتنمكگظطزرذدئو./";
 
 function convertPattern(text){
     let result = "";
@@ -28,8 +30,12 @@ function convertPattern(text){
     }else if (/[آ-ی]/.test(text)){
         usedPattern = FaPattern;
         finalPattern = engPattern;
+    }else if (/[آ-ي]/.test(text)){
+        usedPattern = FaPattern2;
+        finalPattern = engPattern;
+    }else{
+        return "text pattern is not valid just support english and persian";
     }
-    if (usedPattern.length === 0) return "text pattern is not valid just support english and persian";
     for(let i = 0; i < text.length; i++){
         let index = usedPattern.indexOf(text[i]);
         if(index !== -1){
