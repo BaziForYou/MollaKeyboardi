@@ -15,41 +15,61 @@ console.info("Generating Bot System...");
 const bot = new Telegraf(getENV('BOT_TOKEN'));
 const listeningCommands = getENV('Listening_Words').toLowerCase().split(',')
 
-const engPattern = "qwertyuiop[]\\asdfghjkl;'zxcvbnm,./";
-const faPattern = "ضصثقفغعهخحجچپشسیبلاتنمکگظطزرذدئو./";
-const faPattern2 = "ضصثقفغعهخحجچپشسيبلاتنمكگظطزرذدئو./";
 
-function convertPattern(text){
-    let result = "";
-    let usedPattern = "";
-    let finalPattern = "";
-    if (/[a-zA-Z]/.test(text)) {
-        usedPattern = engPattern;
-        finalPattern = faPattern;
-    } else if (/[آ-ی]/.test(text)) {
-        usedPattern = faPattern;
-        finalPattern = engPattern;
-    } else if (/[آ-ي]/.test(text)) {
-        usedPattern = faPattern2;
-        finalPattern = engPattern;
+const engPattern = `qwertyuiop[]\\asdfghjkl;'zxcvbnm,./QWETYUIOP{}|ASDFGHJKL:"ZXCVBNM<>?</>`;
+const faPattern = `ضصثقفغعهخحجچپشسیبلاتنمکگظطزرذدئو./ًٌٍ،؛,][\\}{|َُِّۀآـ«»:"ةيژؤإأء<>؟</>`;
+const expectationSwitch = {
+    "R" : "ريال",
+    "ريال" : "R"
+}
+
+function switchWord(word) {
+    return word.split("").map(char => {
+        let engIndex = engPattern.indexOf(char);
+        let faIndex = faPattern.indexOf(char);
+        if (engIndex !== -1) {
+            return faPattern[engIndex];
+        } else if (faIndex !== -1) {
+            return engPattern[faIndex];
+        } else {
+            return char;
+        }
+    }).join("");
+}
+
+function convertPattern(text) {
+    if (/[a-zA-Z]/g.test(text) || /[آ-ی]/g.test(text) || /[آ-ي]/g.test(text) || /[.,\/#!$%\^&\*;:{}=\-_`~()]/g.test(text)) {
+        const result = text.toLowerCase().split(" ").map(word => {
+            const isExpectationSwitch = Object.keys(expectationSwitch).some(key => {
+                const regex = new RegExp(key, "g");
+                return regex.test(word);
+            });
+            if (isExpectationSwitch) {
+                const expectationSwitchKey = Object.keys(expectationSwitch).find(key => {
+                    const regex = new RegExp(key, "g");
+                    return regex.test(word);
+                });
+                const regex = new RegExp(expectationSwitchKey, "g");
+                const wordWithoutExpectationSwitchKey = word.replace(regex, "");
+                const switchedWord = switchWord(wordWithoutExpectationSwitchKey);
+                const expectationSwitchValue = expectationSwitch[expectationSwitchKey];
+                const expectationSwitchKeyIndex = word.indexOf(expectationSwitchKey);
+                const result = switchedWord.slice(0, expectationSwitchKeyIndex) + expectationSwitchValue + switchedWord.slice(expectationSwitchKeyIndex);
+                return result;
+            } else {
+                return switchWord(word);
+            }
+        }).join(" ");
+        return result;
     } else {
         return "text pattern is not valid just support english and persian";
     }
-    for(let i = 0; i < text.length; i++){
-        let index = usedPattern.indexOf(text[i]);
-        if(index !== -1){
-            result += finalPattern[index];
-        }else{
-            result += text[i];
-        }
-    }
-    return result;
 }
 
 bot.on('text', async (ctx) => {
     if (ctx.chat.type === "private") {
         if (ctx.message.text.length > 0) {
-            const newText = convertPattern(ctx.message.text.toLowerCase());
+            const newText = convertPattern(ctx.message.text);
             await ctx.reply(newText,
                   {reply_to_message_id: ctx.message.message_id});
         } else {
