@@ -13,11 +13,11 @@ function getENV(envName){
 
 console.info("Generating Bot System...");
 const bot = new Telegraf(getENV('BOT_TOKEN'));
-const ListeningCommands = getENV('Listening_Words').toLowerCase().split(',')
+const listeningCommands = getENV('Listening_Words').toLowerCase().split(',')
 
 const engPattern = "qwertyuiop[]\\asdfghjkl;'zxcvbnm,./";
-const FaPattern = "ضصثقفغعهخحجچپشسیبلاتنمکگظطزرذدئو./";
-const FaPattern2 = "ضصثقفغعهخحجچپشسيبلاتنمكگظطزرذدئو./";
+const faPattern = "ضصثقفغعهخحجچپشسیبلاتنمکگظطزرذدئو./";
+const faPattern2 = "ضصثقفغعهخحجچپشسيبلاتنمكگظطزرذدئو./";
 
 function convertPattern(text){
     let result = "";
@@ -25,12 +25,12 @@ function convertPattern(text){
     let finalPattern = "";
     if (/[a-zA-Z]/.test(text)) {
         usedPattern = engPattern;
-        finalPattern = FaPattern;
+        finalPattern = faPattern;
     } else if (/[آ-ی]/.test(text)) {
-        usedPattern = FaPattern;
+        usedPattern = faPattern;
         finalPattern = engPattern;
     } else if (/[آ-ي]/.test(text)) {
-        usedPattern = FaPattern2;
+        usedPattern = faPattern2;
         finalPattern = engPattern;
     } else {
         return "text pattern is not valid just support english and persian";
@@ -57,9 +57,9 @@ bot.on('text', async (ctx) => {
                   {reply_to_message_id: ctx.message.message_id});
         }
     } else if ((ctx.message.text && ctx.message.text.length > 0) && (ctx.chat.type === "group" || ctx.chat.type === "supergroup")) {
-      if ((ListeningCommands.includes(ctx.message.text.toLowerCase()) && ctx.message.reply_to_message)) {
-        const TargetMessage = ctx.message.reply_to_message.text;
-        const newText = convertPattern(TargetMessage.toLowerCase());
+      if ((listeningCommands.includes(ctx.message.text.toLowerCase()) && ctx.message.reply_to_message)) {
+        const targetMessage = ctx.message.reply_to_message.text;
+        const newText = convertPattern(targetMessage.toLowerCase());
         await ctx.reply(newText,
             {reply_to_message_id: ctx.message.message_id});
       }
