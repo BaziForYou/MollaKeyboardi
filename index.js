@@ -39,7 +39,7 @@ function switchWord(word) {
 
 function convertPattern(text) {
     if (/[a-zA-Z]/g.test(text) || /[آ-ی]/g.test(text) || /[آ-ي]/g.test(text) || /[.,\/#!$%\^&\*;:{}=\-_`~()]/g.test(text)) {
-        const result = text.toLowerCase().split(" ").map(word => {
+        const result = text.split(" ").map(word => {
             const isExpectationSwitch = Object.keys(expectationSwitch).some(key => {
                 const regex = new RegExp(key, "g");
                 return regex.test(word);
