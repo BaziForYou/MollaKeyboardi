@@ -66,25 +66,41 @@ function convertPattern(text) {
     }
 }
 
-bot.on('text', async (ctx) => {
+async function workOnMessage(ctx) {
+    const currentMessage = ctx.message.caption || ctx.message.text;
     if (ctx.chat.type === "private") {
-        if (ctx.message.text.length > 0) {
-            const newText = convertPattern(ctx.message.text);
+        if (currentMessage && currentMessage.length > 0) {
+            const newText = convertPattern(currentMessage);
             await ctx.reply(newText,
                   {reply_to_message_id: ctx.message.message_id});
         } else {
             await ctx.reply("text is empty",
                   {reply_to_message_id: ctx.message.message_id});
         }
-    } else if ((ctx.message.text && ctx.message.text.length > 0) && (ctx.chat.type === "group" || ctx.chat.type === "supergroup")) {
-      if ((listeningCommands.includes(ctx.message.text.toLowerCase()) && ctx.message.reply_to_message)) {
-        const targetMessage = ctx.message.reply_to_message.text;
-        const newText = convertPattern(targetMessage.toLowerCase());
-        await ctx.reply(newText,
-            {reply_to_message_id: ctx.message.message_id});
+    } else if ((currentMessage && currentMessage.length > 0) && (ctx.chat.type === "group" || ctx.chat.type === "supergroup")) {
+      if ((listeningCommands.includes(currentMessage.toLowerCase()) && ctx.message.reply_to_message)) {
+        const targetMessage = ctx.message.reply_to_message.caption || ctx.message.reply_to_message.text;
+        if (targetMessage) {
+            const newText = convertPattern(targetMessage);
+            await ctx.reply(newText,
+                {reply_to_message_id: ctx.message.message_id});
+        }
       }
     }
-});
+}
+
+bot.on('text', workOnMessage);
+bot.on('photo', workOnMessage);
+bot.on('sticker', workOnMessage);
+bot.on('video', workOnMessage);
+bot.on('video_note', workOnMessage);
+bot.on('voice', workOnMessage);
+bot.on('audio', workOnMessage);
+bot.on('animation', workOnMessage);
+bot.on('document', workOnMessage);
+bot.on('poll', workOnMessage);
+bot.on('contact', workOnMessage);
+bot.on('location', workOnMessage);
 
 console.info("Starting Bot");
 await bot.launch();
